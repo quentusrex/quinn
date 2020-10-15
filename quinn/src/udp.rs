@@ -23,7 +23,7 @@ pub struct UdpSocket {
 
 impl UdpSocket {
     pub fn from_std(socket: std::net::UdpSocket) -> io::Result<UdpSocket> {
-        let io = mio::net::UdpSocket::from_socket(socket)?;
+        let io = mio::net::UdpSocket::from_std(socket);
         io.init_ext()?;
         let io = PollEvented::new(io)?;
         Ok(UdpSocket { io })

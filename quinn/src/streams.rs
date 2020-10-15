@@ -571,10 +571,6 @@ impl<S> tokio::io::AsyncRead for RecvStream<S>
 where
     S: proto::crypto::Session,
 {
-    unsafe fn prepare_uninitialized_buffer(&self, _: &mut [MaybeUninit<u8>]) -> bool {
-        false
-    }
-
     fn poll_read(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,

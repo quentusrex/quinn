@@ -35,7 +35,7 @@ mio = { version = "0.7.3", features = ["udp"] }
 proto = { package = "quinn-proto", path = "../quinn-proto", version = "0.6.1" }
 rustls = { git = "https://github.com/ctz/rustls", rev = "fee894f7e030", features = ["quic"], optional = true }
 tracing = "0.1.10"
-tokio = { version = "0.3", features = ["rt", "time"] }
+tokio = { version = "0.3", features = ["net", "rt", "time"] }
 webpki = { version = "0.21", optional = true }
 
 [dev-dependencies]
