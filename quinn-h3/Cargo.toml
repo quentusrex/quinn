@@ -36,7 +36,7 @@ pin-project = "^0.4.21"
 quinn-proto = { path = "../quinn-proto", version = "0.6.0" }
 quinn = { path = "../quinn", version = "0.6.0", features = ["tls-rustls"] }
 rustls = { git = "https://github.com/ctz/rustls", rev = "fee894f7e030", features = ["quic"] }
-tokio = "0.2.6"
+tokio = "0.3"
 tokio-util = { version = "0.3.0", features = ["codec"] }
 tracing = "0.1.10"
 webpki = "0.21"
@@ -50,7 +50,7 @@ proptest = "0.10.0"
 rand = "0.7.0"
 rcgen = "0.8"
 structopt = "0.3.0"
-tokio = { version = "0.2.6", features = ["io-util", "macros", "rt-threaded", "time", "fs"] }
+tokio = { version = "0.3", features = ["io-util", "macros", "rt", "time", "fs"] }
 tracing-subscriber = { version = "0.2.5", default-features = false, features = ["env-filter", "fmt", "ansi", "chrono"]}
 tracing-futures = { version = "0.2.0", default-features = false, features = ["std-future"] }
 url = "2"
