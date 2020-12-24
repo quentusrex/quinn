@@ -1,7 +1,7 @@
 use bytes::Bytes;
 use futures::{AsyncReadExt, AsyncWriteExt, StreamExt};
 use http::{Response, StatusCode};
-use tokio::time::{delay_for, Duration};
+use tokio::time::{sleep, Duration};
 
 use crate::{proto::frame::DataFrame, server::IncomingConnection, Error, HttpError};
 
@@ -28,7 +28,7 @@ async fn serve_one(mut incoming: IncomingConnection) -> Result<(), crate::Error>
     Ok(())
 }
 
-#[tokio::test(threaded_scheduler)]
+#[tokio::test(flavor = "multi_thread")]
 async fn incoming_request_stream_ends_on_client_closure() {
     let helper = Helper::new();
     let incoming = helper.make_server();
@@ -41,7 +41,7 @@ async fn incoming_request_stream_ends_on_client_closure() {
     timeout_join(server_handle).await.unwrap();
 }
 
-#[tokio::test(threaded_scheduler)]
+#[tokio::test(flavor = "multi_thread")]
 async fn incoming_request_stream_closed_on_client_drop() {
     let helper = Helper::new();
     let incoming = helper.make_server();
@@ -75,7 +75,7 @@ async fn serve_one_request_client_body(mut incoming: IncomingConnection) -> Stri
     body
 }
 
-#[tokio::test(threaded_scheduler)]
+#[tokio::test(flavor = "multi_thread")]
 async fn client_send_body() {
     let helper = Helper::new();
 
@@ -93,7 +93,7 @@ async fn client_send_body() {
     assert_eq!(timeout_join(server_handle).await, "the body");
 }
 
-#[tokio::test(threaded_scheduler)]
+#[tokio::test(flavor = "multi_thread")]
 async fn client_send_stream_body() {
     let helper = Helper::new();
 
@@ -126,7 +126,7 @@ async fn client_cancel_response() {
             .await
             .expect("accept");
         let recv_req = incoming_req.next().await.expect("wait request");
-        delay_for(Duration::from_millis(25)).await;
+        sleep(Duration::from_millis(25)).await;
         let (_, _, sender) = recv_req.await.expect("recv_req");
         sender
             .send_response(Response::builder().status(StatusCode::OK).body(()).unwrap())
@@ -135,7 +135,7 @@ async fn client_cancel_response() {
     });
 
     let conn = helper.make_connection().await;
-    delay_for(Duration::from_millis(50)).await;
+    sleep(Duration::from_millis(50)).await;
     let (resp, _) = conn.send_request(get("/")).await.unwrap();
     resp.cancel();
 
@@ -170,7 +170,7 @@ async fn go_away() {
     let (resp, _) = conn.send_request(get("/")).await.unwrap();
     assert!(resp.await.is_ok());
 
-    delay_for(Duration::from_millis(50)).await;
+    sleep(Duration::from_millis(50)).await;
     let (resp, _) = conn.send_request(get("/")).await.unwrap();
     assert_matches!(
         resp.await.map(|_| ()),

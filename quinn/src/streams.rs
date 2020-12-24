@@ -14,6 +14,9 @@ use futures::{
     io::{AsyncRead, AsyncWrite},
     ready, FutureExt,
 };
+
+use tokio::io::ReadBuf;
+
 use proto::{ConnectionError, StreamId};
 
 use crate::{connection::ConnectionRef, VarInt};
@@ -488,14 +491,14 @@ impl<S> tokio::io::AsyncRead for RecvStream<S>
 where
     S: proto::crypto::Session,
 {
-    unsafe fn prepare_uninitialized_buffer(&self, _: &mut [MaybeUninit<u8>]) -> bool {
-        false
-    }
+//    unsafe fn prepare_uninitialized_buffer(&self, _: &mut [MaybeUninit<u8>]) -> bool {
+//        false
+//    }
 
     fn poll_read(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
-        buf: &mut [u8],
+        buf: &mut ReadBuf<'_>,
     ) -> Poll<io::Result<usize>> {
         AsyncRead::poll_read(self, cx, buf)
     }

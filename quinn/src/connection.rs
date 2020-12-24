@@ -17,7 +17,7 @@ use futures::{
     FutureExt, StreamExt,
 };
 use proto::{ConnectionError, ConnectionHandle, Dir, StreamEvent, StreamId};
-use tokio::time::{delay_until, Delay, Instant as TokioInstant};
+use tokio::time::{sleep_until, Sleep, Instant as TokioInstant};
 use tracing::info_span;
 
 use crate::{
@@ -625,7 +625,7 @@ where
     handle: ConnectionHandle,
     on_connected: Option<oneshot::Sender<bool>>,
     connected: bool,
-    timer: Option<Delay>,
+    timer: Option<Sleep>,
     conn_events: mpsc::UnboundedReceiver<ConnectionEvent>,
     endpoint_events: mpsc::UnboundedSender<(ConnectionHandle, EndpointEvent)>,
     pub(crate) blocked_writers: HashMap<StreamId, Waker>,
@@ -765,7 +765,7 @@ where
                 self.inner.poll_timeout().map(TokioInstant::from_std),
                 &mut self.timer,
             ) {
-                (Some(timeout), &mut None) => self.timer = Some(delay_until(timeout)),
+                (Some(timeout), &mut None) => self.timer = Some(sleep_until(timeout)),
                 (Some(timeout), &mut Some(ref mut delay)) if delay.deadline() != timeout => {
                     delay.reset(timeout);
                 }
